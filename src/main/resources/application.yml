@@ -1,0 +1,38 @@
+server.port: 7001
+
+context:
+    envName: dev01
+    version: v1
+
+client.api:
+    request.delay.ms: 100
+    eod:
+        baseUrl: eodhistoricaldata.com/api
+        security.key: ${CLIENT_API_EOD_SECURITY_KEY:OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX}
+        resource:
+            eodTimeSeries: eod/
+
+spring:
+    # Spring Kafka
+    kafka:
+        bootstrap-servers: ${KAFKA_BROKER_ADDRESS:localhost:9092}
+        properties:
+            max.request.size: 2000000
+            ssl.endpoint.identification.algorithm: ${SECURITY_SSL_ENDPOINT_ID_ALGO:}
+            sasl.mechanism: ${SECURITY_SASL_MECHANISM:}
+            security.protocol: ${SECURITY_PROTOCOL:}
+            sasl.jaas.config: ${SECURITY_SASL_JAAS_CONFIG:}
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    # Spring WebFlux
+    codec:
+        max-in-memory-size: "20MB"
+
+    # Spring Data JPA
+    data:
+        mongodb:
+            port: 27017
+            host: localhost
+
