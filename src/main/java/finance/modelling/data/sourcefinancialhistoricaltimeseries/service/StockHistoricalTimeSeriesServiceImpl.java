@@ -21,8 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static finance.modelling.fmcommons.exception.ParseException.isClientDailyRequestLimitReached;
-import static finance.modelling.fmcommons.exception.ParseException.isKafkaException;
+import static finance.modelling.fmcommons.exception.ParseException.*;
 import static finance.modelling.fmcommons.logging.LogClient.buildResourcePath;
 import static finance.modelling.fmcommons.logging.LogDb.buildDbUri;
 
@@ -69,11 +68,11 @@ public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTime
                 .doOnNext(ticker -> ingestHistoricalStockTimeSeries(ticker, interval))
                 .subscribe(
                         ticker -> LogDb.logDebugDataItemQueried(Ticker.class, ticker, logDbUri),
-                        error -> LogDb.logErrorFailedDataItemQuery(Ticker.class, error, logDbUri, List.of("Exit(1)"))
+                        error -> LogDb.logErrorFailedDataItemQuery(Ticker.class, error, logDbUri, List.of("Don't catch exception"))
                 );
     }
 
-    protected String appendExchangeCodeToSymbol(Ticker ticker) {
+    public String appendExchangeCodeToSymbol(Ticker ticker) {
         String symbolWithExchangeCode = ticker.getSymbol().concat(".");
         if (ticker.getCountry().equals("USA")) {
             symbolWithExchangeCode = symbolWithExchangeCode.concat("US");
@@ -118,6 +117,12 @@ public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTime
         else if (isKafkaException(error)) {
             responsesToError.add("Print stacktrace");
             error.printStackTrace();
+        }
+        else if (isSaslAuthentificationException(error)) {
+            responsesToError.add("Print error message");
+            responsesToError.add("Exit(1)");
+            error.getMessage();
+            System.exit(1);
         }
         else {
             responsesToError.add("Default");
