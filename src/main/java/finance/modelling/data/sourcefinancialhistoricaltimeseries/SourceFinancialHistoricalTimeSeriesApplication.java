@@ -18,8 +18,9 @@ public class SourceFinancialHistoricalTimeSeriesApplication {
 	}
 
 	@PostConstruct
-	void init() { ;
-		stockHistoricalTimeSeriesService.ingestAllHistoricalStockTimeSeries(Interval.DAY);
+	void init() {
+//		stockHistoricalTimeSeriesService.ingestAllHistoricalStockTimeSeries(Interval.DAY);
+		stockHistoricalTimeSeriesService.ingestHistoricalStockTimeSeries("AAPL.US", Interval.DAY);
 	}
 
 }

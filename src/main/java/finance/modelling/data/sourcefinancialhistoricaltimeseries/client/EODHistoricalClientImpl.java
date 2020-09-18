@@ -3,7 +3,7 @@ package finance.modelling.data.sourcefinancialhistoricaltimeseries.client;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.client.dto.DateOHLCAVDTO;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.client.dto.TickerTimeSeriesDTO;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.client.mapper.EODHistoricalMapper;
-import finance.modelling.data.sourcefinancialhistoricaltimeseries.exception.ClientDailyRequestLimitReached;
+import finance.modelling.fmcommons.exception.client.ClientDailyRequestLimitReached;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -37,7 +37,7 @@ public class EODHistoricalClientImpl implements EODHistoricalClient {
 
     protected Throwable returnTechnicalException(Throwable error) {
         Throwable customException;
-        if (isClientDailyRequestLimitReachedException(error)) {
+        if (isClientDailyRequestLimitReachedResponse(error)) {
             customException = new ClientDailyRequestLimitReached("100k Requests", error);
         }
         else {
@@ -47,7 +47,7 @@ public class EODHistoricalClientImpl implements EODHistoricalClient {
         return customException;
     }
 
-    protected boolean isClientDailyRequestLimitReachedException(Throwable error) {
+    protected boolean isClientDailyRequestLimitReachedResponse(Throwable error) {
         return error.getMessage().contains("402 Payment Required from GET");
     }
 
