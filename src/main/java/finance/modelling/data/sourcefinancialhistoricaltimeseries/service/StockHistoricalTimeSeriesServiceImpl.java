@@ -1,4 +1,4 @@
-package finance.modelling.data.sourcefinancialhistoricaltimeseries.service.impl;
+package finance.modelling.data.sourcefinancialhistoricaltimeseries.service;
 
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.api.publisher.KafkaTimeSeriesPublisher;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.api.publisher.mapper.TickerTimeSeriesMapper;
@@ -6,7 +6,7 @@ import finance.modelling.data.sourcefinancialhistoricaltimeseries.api.publisher.
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.client.EODHistoricalClient;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.repository.TickerRepository;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.repository.model.Ticker;
-import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.contract.StockHistoricalTimeSeriesService;
+import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.StockHistoricalTimeSeriesService;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.enums.Interval;
 import finance.modelling.fmcommons.logging.LogClient;
 import finance.modelling.fmcommons.logging.LogDb;

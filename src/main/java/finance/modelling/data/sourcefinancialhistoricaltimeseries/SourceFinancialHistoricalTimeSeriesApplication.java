@@ -1,7 +1,7 @@
 package finance.modelling.data.sourcefinancialhistoricaltimeseries;
 
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.enums.Interval;
-import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.contract.StockHistoricalTimeSeriesService;
+import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.StockHistoricalTimeSeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

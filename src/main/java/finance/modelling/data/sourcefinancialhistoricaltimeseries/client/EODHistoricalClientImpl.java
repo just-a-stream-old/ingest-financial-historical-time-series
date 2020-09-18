@@ -41,7 +41,7 @@ public class EODHistoricalClientImpl implements EODHistoricalClient {
             customException = new ClientDailyRequestLimitReached("100k Requests", error);
         }
         else {
-            // Some other control flow...
+            // Todo: Implement more control flow for determining custom exception type
             customException = error;
         }
         return customException;
