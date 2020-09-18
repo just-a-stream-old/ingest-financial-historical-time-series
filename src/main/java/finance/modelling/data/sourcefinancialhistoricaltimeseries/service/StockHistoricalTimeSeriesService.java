@@ -1,4 +1,4 @@
-package finance.modelling.data.sourcefinancialhistoricaltimeseries.service.contract;
+package finance.modelling.data.sourcefinancialhistoricaltimeseries.service;
 
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.enums.Interval;
 

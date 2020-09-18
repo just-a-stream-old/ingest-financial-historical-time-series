@@ -1,8 +1,7 @@
-server.port: 7001
+server.port: ${API_WEB_SERVER_PORT:7001}
 
 context:
-    envName: dev01
-    version: v1
+    envName: ${CONTEXT_ENV_NAME:dev01}
 
 client.api:
     request.delay.ms: 100
@@ -18,10 +17,10 @@ spring:
         bootstrap-servers: ${KAFKA_BROKER_ADDRESS:localhost:9092}
         properties:
             max.request.size: 2000000
-            ssl.endpoint.identification.algorithm: ${SECURITY_SSL_ENDPOINT_ID_ALGO:}
-            sasl.mechanism: ${SECURITY_SASL_MECHANISM:}
-            security.protocol: ${SECURITY_PROTOCOL:}
-            sasl.jaas.config: ${SECURITY_SASL_JAAS_CONFIG:}
+            ssl.endpoint.identification.algorithm: ${SECURITY_SSL_ENDPOINT_ID_ALGO}
+            sasl.mechanism: ${SECURITY_SASL_MECHANISM}
+            security.protocol: ${SECURITY_PROTOCOL}
+            sasl.jaas.config: ${SECURITY_SASL_JAAS_CONFIG}
         producer:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -33,6 +32,6 @@ spring:
     # Spring Data JPA
     data:
         mongodb:
-            port: 27017
-            host: localhost
+            host: ${DATA_MONGODB_HOST:localhost}
+            port: ${DATA_MONGODB_PORT:27017}
 
