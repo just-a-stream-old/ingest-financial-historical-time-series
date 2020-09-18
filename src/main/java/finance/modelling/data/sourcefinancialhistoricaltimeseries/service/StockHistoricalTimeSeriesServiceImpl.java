@@ -6,7 +6,6 @@ import finance.modelling.data.sourcefinancialhistoricaltimeseries.api.publisher.
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.client.EODHistoricalClient;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.repository.TickerRepository;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.repository.model.Ticker;
-import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.StockHistoricalTimeSeriesService;
 import finance.modelling.data.sourcefinancialhistoricaltimeseries.service.enums.Interval;
 import finance.modelling.fmcommons.logging.LogClient;
 import finance.modelling.fmcommons.logging.LogDb;
@@ -21,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static finance.modelling.fmcommons.exception.ParseException.*;
+import static finance.modelling.fmcommons.exception.ExceptionParser.*;
 import static finance.modelling.fmcommons.logging.LogClient.buildResourcePath;
 import static finance.modelling.fmcommons.logging.LogDb.buildDbUri;
 
@@ -67,7 +66,7 @@ public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTime
                 .delayElements(Duration.ofMillis(requestDelayMs))
                 .doOnNext(ticker -> ingestHistoricalStockTimeSeries(ticker, interval))
                 .subscribe(
-                        ticker -> LogDb.logDebugDataItemQueried(Ticker.class, ticker, logDbUri),
+                        symbol -> LogDb.logDebugDataItemQueried(Ticker.class, symbol, logDbUri),
                         error -> LogDb.logErrorFailedDataItemQuery(Ticker.class, error, logDbUri, List.of("Don't catch exception"))
                 );
     }
@@ -83,23 +82,23 @@ public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTime
         return symbolWithExchangeCode;
     }
 
-    public void ingestHistoricalStockTimeSeries(String ticker, Interval interval) {
+    public void ingestHistoricalStockTimeSeries(String symbol, Interval interval) {
         eodHistoricalClient
-                .getStockHistoricalTimeSeries(buildStockTimeSeriesUri(ticker, interval), ticker)
+                .getStockHistoricalTimeSeries(buildStockTimeSeriesUri(symbol, interval), symbol)
                 .map(TickerTimeSeriesMapper.INSTANCE::tickerTimeSeriesDTOToTickerTimeSeries)
                 .doOnNext(timeSeries -> kafkaPublisher.publishMessage("example-topic", timeSeries))
                 .subscribe(
                         data -> LogClient.logInfoDataItemReceived(
-                                ticker, TickerTimeSeries.class, logResourcePath, Map.of("interval", interval)),
-                        error -> respondToErrorType(ticker, interval, error)
+                                symbol, TickerTimeSeries.class, logResourcePath, Map.of("interval", interval)),
+                        error -> respondToErrorType(symbol, interval, error)
                 );
     }
 
-    protected URI buildStockTimeSeriesUri(String ticker, Interval interval) {
+    protected URI buildStockTimeSeriesUri(String symbol, Interval interval) {
         return UriComponentsBuilder.newInstance()
                 .scheme("https")
                 .host(eodBaseUrl)
-                .path(timeSeriesResourceUrl.concat(ticker))
+                .path(timeSeriesResourceUrl.concat(symbol))
                 .queryParam("period", interval.toString())
                 .queryParam("fmt", "json")
                 .queryParam("api_token", eodApiKey)
@@ -107,7 +106,7 @@ public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTime
                 .toUri();
     }
 
-    protected void respondToErrorType(String ticker, Interval interval, Throwable error) {
+    protected void respondToErrorType(String symbol, Interval interval, Throwable error) {
         List<String> responsesToError = new LinkedList<>();
 
         if (isClientDailyRequestLimitReached(error)) {
@@ -120,15 +119,13 @@ public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTime
         }
         else if (isSaslAuthentificationException(error)) {
             responsesToError.add("Print error message");
-            responsesToError.add("Exit(1)");
-            error.getMessage();
-            System.exit(1);
+            log.error(error.getMessage());
         }
         else {
             responsesToError.add("Default");
         }
 
         LogClient.logErrorFailedToReceiveDataItem(
-                ticker, TickerTimeSeries.class, error, logResourcePath, responsesToError, Map.of("interval", interval));
+                symbol, TickerTimeSeries.class, error, logResourcePath, responsesToError, Map.of("interval", interval));
     }
 }
