@@ -58,8 +58,6 @@ public class EODHistoricalClientImpl implements EODHistoricalClient {
         return error.getMessage().contains("401 Unauthorized from GET");
     }
 
-
-
     protected Retry getRetry() {
         return Retry
                 .backoff(10, Duration.ofMillis(200))
