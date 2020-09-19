@@ -3,7 +3,7 @@ package finance.modelling.data.ingestfinancialhistoricaltimeseries.client;
 import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.dto.DateOHLCAVDTO;
 import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.dto.TickerTimeSeriesDTO;
 import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.mapper.EODHistoricalMapper;
-import finance.modelling.fmcommons.helper.client.EodHistoricalClientHelper;
+import finance.modelling.fmcommons.data.helper.client.EodHistoricalClientHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
