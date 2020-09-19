@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'finance.modelling.data.source-financial-historical-time-series' is invalid and this project uses 'finance.modelling.data.sourcefinancialhistoricaltimeseries' instead.
+* The original package name 'finance.modelling.data.source-financial-historical-time-series' is invalid and this project uses 'finance.modelling.data.ingestfinancialhistoricaltimeseries' instead.
 
 # Getting Started
 

@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>finance.modelling.data</groupId>
-	<artifactId>source-financial-historical-time-series</artifactId>
+	<artifactId>ingest-financial-historical-time-series</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>source-financial-historical-time-series</name>
-	<description>Source historical EOD financial time-series data.</description>
+	<name>ingest-financial-historical-time-series</name>
+	<description>Ingest historical EOD financial time-series data.</description>
 
 	<properties>
 		<java.version>14</java.version>
