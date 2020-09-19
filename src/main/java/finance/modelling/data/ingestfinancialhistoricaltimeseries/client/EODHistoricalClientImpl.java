@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 import java.net.URI;
+import java.time.Duration;
 
 @Component
 @Slf4j
@@ -30,8 +32,16 @@ public class EODHistoricalClientImpl implements EODHistoricalClient {
                 .retrieve()
                 .bodyToFlux(DateOHLCAVDTO.class)
                 .onErrorMap(eodHelper::returnTechnicalException)
-                .retryWhen(eodHelper.getRetry())
+                .retryWhen(getRetry())
                 .collectList()
                 .map(dataPoint -> EODHistoricalMapper.mapDateOHLCAVDTOListToTickerTimeSeriesDTO(dataPoint, ticker));
+    }
+
+    protected Retry getRetry() {
+        return Retry
+                .backoff(10, Duration.ofMillis(200))
+                // Todo: Add something impl
+                .doAfterRetry(something -> something.toString())
+                .filter(eodHelper::isNotRetryableException);
     }
 }
