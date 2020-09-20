@@ -3,13 +3,23 @@ server.port: ${API_WEB_SERVER_PORT:7001}
 context:
     envName: ${CONTEXT_ENV_NAME:dev01}
 
-client.api:
-    request.delay.ms: 100
+client:
     eod:
+        request.delay.ms: 100
         baseUrl: eodhistoricaldata.com/api
         security.key: ${CLIENT_API_EOD_SECURITY_KEY:OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX}
         resource:
             eodTimeSeries: eod/
+
+kafka.bindings:
+    publisher:
+        partitions: 6
+        replicas: 3
+        eod:
+            eodTimeSeries: eod.${CONTEXT_ENV_NAME}.financial.time_series_1day.ingestion.${CONTEXT_VERSION}
+    consumer:
+        fmp:
+            fmpTickers: fmp.nonprod.financial.tickers.ingestion.v1
 
 spring:
     # Spring Kafka
@@ -24,6 +34,12 @@ spring:
         producer:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        consumer:
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            group-id: ingest_financial_fundamentals_fmp_consumer_ticker_id_00000041
+            auto-offset-reset: earliest
+            properties.spring.json.trusted.packages: "*"
 
     # Spring WebFlux
     codec:

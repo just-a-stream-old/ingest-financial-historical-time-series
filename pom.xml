@@ -27,12 +27,6 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-		<!-- Spring Kafka -->
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka</artifactId>
-		</dependency>
-
 		<!-- MapStruct -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -40,20 +34,27 @@
 			<version>${org.mapstruct.version}</version>
 		</dependency>
 
-		<!-- Reactive Async -->
+		<!-- Spring Kafka -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
 		</dependency>
+
+
+		<!-- Reactive Async -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/io.projectreactor.addons/reactor-extra -->
+		<dependency>
+			<groupId>io.projectreactor.kafka</groupId>
+			<artifactId>reactor-kafka</artifactId>
+			<version>1.2.2.RELEASE</version>
+		</dependency>
 		<dependency>
 			<groupId>io.projectreactor.addons</groupId>
 			<artifactId>reactor-extra</artifactId>
-			<version>3.3.3.RELEASE</version>
+			<version>3.3.4.RELEASE</version>
 		</dependency>
 
 		<!-- Lombok Annotations -->

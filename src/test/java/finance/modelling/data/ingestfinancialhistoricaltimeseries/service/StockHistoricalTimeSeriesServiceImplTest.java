@@ -1,6 +1,6 @@
 package finance.modelling.data.ingestfinancialhistoricaltimeseries.service;
 
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.repository.model.Ticker;
+import finance.modelling.fmcommons.data.schema.eod.dto.EodTickerDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +20,7 @@ class StockHistoricalTimeSeriesServiceImplTest {
 
     @Test
     void shouldReturnSymbolWithUSExchangeCodeWithSymbolFromUSAProvided() {
-        Ticker mockTicker = mock(Ticker.class);
+        EodTickerDTO mockTicker = mock(EodTickerDTO.class);
 
         doReturn("AAPL").when(mockTicker).getSymbol();
         doReturn("USA").when(mockTicker).getCountry();
@@ -35,17 +35,17 @@ class StockHistoricalTimeSeriesServiceImplTest {
 
     @Test
     void shouldReturnSymbolWithExchangeCodeAppendedWithNonUSASymbolProvided() {
-        Ticker mockTicker = mock(Ticker.class);
+        EodTickerDTO mockTicker = mock(EodTickerDTO.class);
 
         doReturn("AAPL").when(mockTicker).getSymbol();
         doReturn("UK").when(mockTicker).getCountry();
-        doReturn("LSE").when(mockTicker).getExchangeCode();
+        doReturn("LSE").when(mockTicker).getExchange();
 
         String actualReturn = timeSeriesService.appendExchangeCodeToSymbol(mockTicker);
 
         verify(mockTicker, times(1)).getSymbol();
         verify(mockTicker, times(1)).getCountry();
-        verify(mockTicker, times(1)).getExchangeCode();
+        verify(mockTicker, times(1)).getExchange();
 
         assertThat(actualReturn, equalTo("AAPL.LSE"));
     }

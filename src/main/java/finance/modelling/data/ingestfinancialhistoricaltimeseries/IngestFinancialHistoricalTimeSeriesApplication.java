@@ -1,7 +1,7 @@
 package finance.modelling.data.ingestfinancialhistoricaltimeseries;
 
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.service.enums.Interval;
 import finance.modelling.data.ingestfinancialhistoricaltimeseries.service.StockHistoricalTimeSeriesService;
+import finance.modelling.fmcommons.data.schema.eod.enums.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,8 +19,8 @@ public class IngestFinancialHistoricalTimeSeriesApplication {
 
 	@PostConstruct
 	void init() {
-//		stockHistoricalTimeSeriesService.ingestAllHistoricalStockTimeSeries(Interval.DAY);
-		stockHistoricalTimeSeriesService.ingestHistoricalStockTimeSeries("AAPL.US", Interval.DAY);
+//		stockHistoricalTimeSeriesService.ingestHistoricalStockTimeSeries("AAPL.US", Interval.DAY);
+		stockHistoricalTimeSeriesService.ingestAllHistoricalStockTimeSeries(Interval.DAY);
 	}
 
 }

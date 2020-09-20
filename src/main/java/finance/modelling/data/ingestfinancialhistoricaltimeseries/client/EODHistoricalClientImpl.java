@@ -1,9 +1,9 @@
 package finance.modelling.data.ingestfinancialhistoricaltimeseries.client;
 
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.dto.DateOHLCAVDTO;
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.dto.TickerTimeSeriesDTO;
 import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.mapper.EODHistoricalMapper;
 import finance.modelling.fmcommons.data.helper.client.EodHistoricalClientHelper;
+import finance.modelling.fmcommons.data.schema.eod.dto.EodDateOHLCAVDTO;
+import finance.modelling.fmcommons.data.schema.eod.dto.EodTickerTimeSeriesDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,23 +25,21 @@ public class EODHistoricalClientImpl implements EODHistoricalClient {
         this.eodHelper = eodHelper;
     }
 
-    public Mono<TickerTimeSeriesDTO> getStockHistoricalTimeSeries(URI resourceUri, String ticker) {
+    public Mono<EodTickerTimeSeriesDTO> getStockHistoricalTimeSeries(URI resourceUri, String ticker) {
         return client
                 .get()
                 .uri(resourceUri)
                 .retrieve()
-                .bodyToFlux(DateOHLCAVDTO.class)
-                .onErrorMap(eodHelper::returnTechnicalException)
-                .retryWhen(getRetry())
+                .bodyToFlux(EodDateOHLCAVDTO.class)
                 .collectList()
-                .map(dataPoint -> EODHistoricalMapper.mapDateOHLCAVDTOListToTickerTimeSeriesDTO(dataPoint, ticker));
+                .map(dataPoint -> EODHistoricalMapper.mapDateOHLCAVDTOListToTickerTimeSeriesDTO(dataPoint, ticker))
+                .onErrorMap(eodHelper::returnTechnicalException)
+                .retryWhen(getRetry());
     }
 
     protected Retry getRetry() {
         return Retry
-                .backoff(10, Duration.ofMillis(200))
-                // Todo: Add something impl
-                .doAfterRetry(something -> something.toString())
-                .filter(eodHelper::isNotRetryableException);
+                .backoff(3, Duration.ofMillis(4000000))
+                .filter(eodHelper::isRetryableException);
     }
 }

@@ -1,6 +1,7 @@
 package finance.modelling.data.ingestfinancialhistoricaltimeseries.service;
 
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.service.enums.Interval;
+
+import finance.modelling.fmcommons.data.schema.eod.enums.Interval;
 
 public interface StockHistoricalTimeSeriesService {
     void ingestAllHistoricalStockTimeSeries(Interval interval);

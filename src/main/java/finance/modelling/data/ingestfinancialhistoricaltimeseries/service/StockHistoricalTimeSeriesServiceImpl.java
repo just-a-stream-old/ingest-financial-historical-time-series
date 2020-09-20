@@ -1,14 +1,15 @@
 package finance.modelling.data.ingestfinancialhistoricaltimeseries.service;
 
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.api.publisher.KafkaTimeSeriesPublisher;
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.api.publisher.mapper.TickerTimeSeriesMapper;
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.api.publisher.model.TickerTimeSeries;
+import finance.modelling.data.ingestfinancialhistoricaltimeseries.api.consumer.KafkaConsumerTickerImpl;
 import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.EODHistoricalClient;
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.repository.TickerRepository;
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.repository.model.Ticker;
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.service.enums.Interval;
-import finance.modelling.fmcommons.logging.LogClient;
-import finance.modelling.fmcommons.logging.LogDb;
+import finance.modelling.data.ingestfinancialhistoricaltimeseries.publisher.KafkaTimeSeriesPublisher;
+import finance.modelling.fmcommons.data.helper.client.EodHistoricalClientHelper;
+import finance.modelling.fmcommons.data.logging.LogClient;
+import finance.modelling.fmcommons.data.logging.LogConsumer;
+import finance.modelling.fmcommons.data.schema.eod.dto.EodTickerDTO;
+import finance.modelling.fmcommons.data.schema.eod.dto.EodTickerTimeSeriesDTO;
+import finance.modelling.fmcommons.data.schema.eod.enums.Interval;
+import finance.modelling.fmcommons.data.schema.fmp.dto.FmpTickerDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,68 +17,69 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
-import static finance.modelling.fmcommons.exception.ExceptionParser.*;
-import static finance.modelling.fmcommons.logging.LogClient.buildResourcePath;
-import static finance.modelling.fmcommons.logging.LogDb.buildDbUri;
+import static finance.modelling.fmcommons.data.logging.LogClient.buildResourcePath;
+import static finance.modelling.fmcommons.data.logging.LogConsumer.determineTraceIdFromHeaders;
 
 @Service
 @Slf4j
 public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTimeSeriesService {
 
+    private final EodHistoricalClientHelper eodHelper;
+    private final KafkaConsumerTickerImpl kafkaConsumer;
+    private final String inputTickerTopic;
     private final EODHistoricalClient eodHistoricalClient;
-    private final TickerRepository tickerRepository;
     private final KafkaTimeSeriesPublisher kafkaPublisher;
+    private final String outputTimeSeriesTopic;
     private final String eodApiKey;
     private final String eodBaseUrl;
     private final String timeSeriesResourceUrl;
     private final String logResourcePath;
     private final Long requestDelayMs;
-    private final String logDbUri;
 
     public StockHistoricalTimeSeriesServiceImpl(
+            EodHistoricalClientHelper eodHelper,
+            KafkaConsumerTickerImpl kafkaConsumer,
+            @Value("${kafka.bindings.consumer.fmp.fmpTickers}") String inputTickerTopic,
             EODHistoricalClient eodHistoricalClient,
-            TickerRepository tickerRepository,
             KafkaTimeSeriesPublisher kafkaPublisher,
-            @Value("${client.api.eod.security.key}") String eodApiKey,
-            @Value("${client.api.eod.baseUrl}") String eodBaseUrl,
-            @Value("${client.api.eod.resource.eodTimeSeries}") String timeSeriesResourceUrl,
-            @Value("${client.api.request.delay.ms}") Long requestDelayMs,
-            @Value("${spring.data.mongodb.host}") String dbHost,
-            @Value("${spring.data.mongodb.port}") String dbPort) {
+            @Value("${kafka.bindings.publisher.eod.eodTimeSeries}") String outputTimeSeriesTopic,
+            @Value("${client.eod.security.key}") String eodApiKey,
+            @Value("${client.eod.baseUrl}") String eodBaseUrl,
+            @Value("${client.eod.resource.eodTimeSeries}") String timeSeriesResourceUrl,
+            @Value("${client.eod.request.delay.ms}") Long requestDelayMs) {
+        this.eodHelper = eodHelper;
+        this.kafkaConsumer = kafkaConsumer;
+        this.inputTickerTopic = inputTickerTopic;
         this.eodHistoricalClient = eodHistoricalClient;
-        this.tickerRepository = tickerRepository;
         this.kafkaPublisher = kafkaPublisher;
+        this.outputTimeSeriesTopic = outputTimeSeriesTopic;
         this.eodApiKey = eodApiKey;
         this.eodBaseUrl = eodBaseUrl;
         this.timeSeriesResourceUrl = timeSeriesResourceUrl;
         this.logResourcePath = buildResourcePath(eodBaseUrl, timeSeriesResourceUrl);
         this.requestDelayMs = requestDelayMs;
-        this.logDbUri = buildDbUri(dbHost, dbPort);
     }
 
     public void ingestAllHistoricalStockTimeSeries(Interval interval) {
-        tickerRepository
-                .findAll()
-                .map(this::appendExchangeCodeToSymbol)
+        kafkaConsumer
+                .receiveMessages(inputTickerTopic)
                 .delayElements(Duration.ofMillis(requestDelayMs))
-                .doOnNext(ticker -> ingestHistoricalStockTimeSeries(ticker, interval))
+                .doOnNext(message -> ingestHistoricalStockTimeSeries(message.value().getSymbol(), interval))
                 .subscribe(
-                        symbol -> LogDb.logDebugDataItemQueried(Ticker.class, symbol, logDbUri),
-                        error -> LogDb.logErrorFailedDataItemQuery(Ticker.class, error, logDbUri, List.of("Don't catch exception"))
+                        message -> LogConsumer.logInfoDataItemConsumed(
+                                FmpTickerDTO.class, inputTickerTopic, determineTraceIdFromHeaders(message.headers())),
+                        error -> LogConsumer.logErrorFailedToConsumeDataItem(FmpTickerDTO.class, inputTickerTopic)
                 );
     }
 
-    public String appendExchangeCodeToSymbol(Ticker ticker) {
+    public String appendExchangeCodeToSymbol(EodTickerDTO ticker) {
         String symbolWithExchangeCode = ticker.getSymbol().concat(".");
         if (ticker.getCountry().equals("USA")) {
             symbolWithExchangeCode = symbolWithExchangeCode.concat("US");
         }
         else {
-            symbolWithExchangeCode = symbolWithExchangeCode.concat(ticker.getExchangeCode());
+            symbolWithExchangeCode = symbolWithExchangeCode.concat(ticker.getExchange());
         }
         return symbolWithExchangeCode;
     }
@@ -85,12 +87,11 @@ public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTime
     public void ingestHistoricalStockTimeSeries(String symbol, Interval interval) {
         eodHistoricalClient
                 .getStockHistoricalTimeSeries(buildStockTimeSeriesUri(symbol, interval), symbol)
-                .map(TickerTimeSeriesMapper.INSTANCE::tickerTimeSeriesDTOToTickerTimeSeries)
-                .doOnNext(timeSeries -> kafkaPublisher.publishMessage("example-topic", timeSeries))
+                .doOnNext(timeSeries -> kafkaPublisher.publishMessage(outputTimeSeriesTopic, timeSeries))
                 .subscribe(
-                        data -> LogClient.logInfoDataItemReceived(
-                                symbol, TickerTimeSeries.class, logResourcePath, Map.of("interval", interval)),
-                        error -> respondToErrorType(symbol, interval, error)
+                        timeSeries -> LogClient.logInfoDataItemReceived(
+                                timeSeries.getSymbol(), EodTickerTimeSeriesDTO.class, logResourcePath),
+                        error ->  eodHelper.respondToErrorType(symbol, EodTickerTimeSeriesDTO.class, error, logResourcePath)
                 );
     }
 
@@ -104,28 +105,5 @@ public class StockHistoricalTimeSeriesServiceImpl implements StockHistoricalTime
                 .queryParam("api_token", eodApiKey)
                 .build()
                 .toUri();
-    }
-
-    protected void respondToErrorType(String symbol, Interval interval, Throwable error) {
-        List<String> responsesToError = new LinkedList<>();
-
-        if (isClientDailyRequestLimitReached(error)) {
-            // Todo: Implement stateful retry system when max requests limit reached
-            responsesToError.add("Scheduled retry...");
-        }
-        else if (isKafkaException(error)) {
-            responsesToError.add("Print stacktrace");
-            error.printStackTrace();
-        }
-        else if (isSaslAuthentificationException(error)) {
-            responsesToError.add("Print error message");
-            log.error(error.getMessage());
-        }
-        else {
-            responsesToError.add("Default");
-        }
-
-        LogClient.logErrorFailedToReceiveDataItem(
-                symbol, TickerTimeSeries.class, error, logResourcePath, responsesToError, Map.of("interval", interval));
     }
 }
