@@ -5,7 +5,7 @@ context:
 
 client:
     eod:
-        request.delay.ms: 100
+        request.delay.ms: 110
         baseUrl: eodhistoricaldata.com/api
         security.key: ${CLIENT_API_EOD_SECURITY_KEY:OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX}
         resource:
@@ -37,7 +37,7 @@ spring:
         consumer:
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-            group-id: ingest_financial_fundamentals_fmp_consumer_ticker_id_00000041
+            group-id: ingest_financial_timeseries_1day_eod_consumer_ticker_id_00000001
             auto-offset-reset: earliest
             properties.spring.json.trusted.packages: "*"
 

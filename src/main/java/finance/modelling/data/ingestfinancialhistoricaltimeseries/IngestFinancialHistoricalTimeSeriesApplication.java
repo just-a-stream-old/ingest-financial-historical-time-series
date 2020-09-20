@@ -13,13 +13,15 @@ public class IngestFinancialHistoricalTimeSeriesApplication {
 
 	@Autowired StockHistoricalTimeSeriesService stockHistoricalTimeSeriesService;
 
+	// Todo: Add eod client configuration to group together related @Values injected into services
+	// Todo: Send certain failures to DLQ or implement a stateful retry schedule
+
 	public static void main(String[] args) {
 		SpringApplication.run(IngestFinancialHistoricalTimeSeriesApplication.class, args);
 	}
 
 	@PostConstruct
 	void init() {
-//		stockHistoricalTimeSeriesService.ingestHistoricalStockTimeSeries("AAPL.US", Interval.DAY);
 		stockHistoricalTimeSeriesService.ingestAllHistoricalStockTimeSeries(Interval.DAY);
 	}
 
