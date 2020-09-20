@@ -15,6 +15,7 @@ public class IngestFinancialHistoricalTimeSeriesApplication {
 
 	// Todo: Add eod client configuration to group together related @Values injected into services
 	// Todo: Send certain failures to DLQ or implement a stateful retry schedule
+	// Todo: Set up something automated to continuously consume data in real-time? Or seperate service for real-time feed?
 
 	public static void main(String[] args) {
 		SpringApplication.run(IngestFinancialHistoricalTimeSeriesApplication.class, args);

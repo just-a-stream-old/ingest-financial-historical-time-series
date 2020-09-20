@@ -1,4 +1,4 @@
-server.port: ${API_WEB_SERVER_PORT:7001}
+server.port: ${API_WEB_SERVER_PORT:7002}
 
 context:
     envName: ${CONTEXT_ENV_NAME:dev01}
@@ -13,7 +13,7 @@ client:
 
 kafka.bindings:
     publisher:
-        partitions: 6
+        partitions: 3
         replicas: 3
         eod:
             eodTimeSeries: eod.${CONTEXT_ENV_NAME}.financial.time_series_1day.ingestion.${CONTEXT_VERSION}
@@ -37,17 +37,11 @@ spring:
         consumer:
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-            group-id: ingest_financial_timeseries_1day_eod_consumer_ticker_id_00000001
+            group-id: ingest_financial_timeseries_1day_eod_consumer_ticker_id_00000005
             auto-offset-reset: earliest
             properties.spring.json.trusted.packages: "*"
 
     # Spring WebFlux
     codec:
         max-in-memory-size: "20MB"
-
-    # Spring Data JPA
-    data:
-        mongodb:
-            host: ${DATA_MONGODB_HOST:localhost}
-            port: ${DATA_MONGODB_PORT:27017}
 
