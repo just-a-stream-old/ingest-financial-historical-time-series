@@ -1,8 +1,8 @@
-package finance.modelling.data.ingestfinancialhistoricaltimeseries.service;
+package finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.service;
 
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.api.consumer.KafkaConsumerTickerImpl;
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.EODHistoricalClient;
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.publisher.KafkaTimeSeriesPublisher;
+import finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.client.EODHistoricalClient;
+import finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.publisher.KafkaTimeSeriesPublisher;
+import finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.api.consumer.KafkaConsumerTickerImpl;
 import finance.modelling.fmcommons.data.helper.client.EodHistoricalClientHelper;
 import finance.modelling.fmcommons.data.logging.LogClient;
 import finance.modelling.fmcommons.data.logging.LogConsumer;

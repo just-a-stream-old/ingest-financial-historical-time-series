@@ -1,4 +1,4 @@
-package finance.modelling.data.ingestfinancialhistoricaltimeseries.client.config;
+package finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.client.config;
 
 import finance.modelling.fmcommons.data.helper.client.EodHistoricalClientHelper;
 import org.springframework.context.annotation.Bean;

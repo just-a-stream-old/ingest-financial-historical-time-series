@@ -1,6 +1,6 @@
-package finance.modelling.data.ingestfinancialhistoricaltimeseries;
+package finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries;
 
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.service.StockHistoricalTimeSeriesService;
+import finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.service.StockHistoricalTimeSeriesService;
 import finance.modelling.fmcommons.data.schema.eod.enums.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -11,7 +11,8 @@ import javax.annotation.PostConstruct;
 @SpringBootApplication
 public class IngestFinancialHistoricalTimeSeriesApplication {
 
-	@Autowired StockHistoricalTimeSeriesService stockHistoricalTimeSeriesService;
+	@Autowired
+	StockHistoricalTimeSeriesService stockHistoricalTimeSeriesService;
 
 	// Todo: Add eod client configuration to group together related @Values injected into services
 	// Todo: Send certain failures to DLQ or implement a stateful retry schedule

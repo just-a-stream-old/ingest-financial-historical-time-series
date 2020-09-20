@@ -1,6 +1,6 @@
-package finance.modelling.data.ingestfinancialhistoricaltimeseries.client;
+package finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.client;
 
-import finance.modelling.data.ingestfinancialhistoricaltimeseries.client.mapper.EODHistoricalMapper;
+import finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.client.mapper.EODHistoricalMapper;
 import finance.modelling.fmcommons.data.helper.client.EodHistoricalClientHelper;
 import finance.modelling.fmcommons.data.schema.eod.dto.EodDateOHLCAVDTO;
 import finance.modelling.fmcommons.data.schema.eod.dto.EodTickerTimeSeriesDTO;

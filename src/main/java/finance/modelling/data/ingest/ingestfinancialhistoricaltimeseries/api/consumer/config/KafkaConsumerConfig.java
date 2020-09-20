@@ -1,4 +1,4 @@
-package finance.modelling.data.ingestfinancialhistoricaltimeseries.api.consumer.config;
+package finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.api.consumer.config;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package finance.modelling.data.ingestfinancialhistoricaltimeseries.publisher;
+package finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.publisher;
 
 import finance.modelling.fmcommons.data.logging.LogPublisher;
 import finance.modelling.fmcommons.data.schema.eod.dto.EodTickerTimeSeriesDTO;

@@ -1,4 +1,4 @@
-package finance.modelling.data.ingestfinancialhistoricaltimeseries.api.consumer;
+package finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.api.consumer;
 
 import finance.modelling.fmcommons.data.schema.fmp.dto.FmpTickerDTO;
 import org.springframework.stereotype.Component;

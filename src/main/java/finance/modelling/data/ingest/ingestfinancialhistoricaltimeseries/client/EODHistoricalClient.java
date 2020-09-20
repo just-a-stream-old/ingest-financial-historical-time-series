@@ -1,4 +1,4 @@
-package finance.modelling.data.ingestfinancialhistoricaltimeseries.client;
+package finance.modelling.data.ingest.ingestfinancialhistoricaltimeseries.client;
 
 
 import finance.modelling.fmcommons.data.schema.eod.dto.EodTickerTimeSeriesDTO;
