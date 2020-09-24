@@ -13,7 +13,7 @@ client:
 
 kafka.bindings:
     publisher:
-        partitions: 3
+        partitions: 1
         replicas: 3
         eod:
             eodTimeSeries: eod.${CONTEXT_ENV_NAME}.financial.time_series_1day.ingestion.${CONTEXT_VERSION}
@@ -24,6 +24,7 @@ kafka.bindings:
 spring:
     # Spring Kafka
     kafka:
+        trace.header: x-trace-id
         bootstrap-servers: ${KAFKA_BROKER_ADDRESS:localhost:9092}
         properties:
             max.request.size: 2000000
@@ -37,7 +38,7 @@ spring:
         consumer:
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-            group-id: ingest_financial_timeseries_1day_eod_consumer_ticker_id_00000005
+            group-id: ingest_financial_timeseries_1day_eod_consumer_ticker_id_00000008
             auto-offset-reset: earliest
             properties.spring.json.trusted.packages: "*"
 
