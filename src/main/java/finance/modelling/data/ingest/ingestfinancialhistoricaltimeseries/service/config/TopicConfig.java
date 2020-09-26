@@ -13,7 +13,7 @@ public class TopicConfig {
     private final String eodTimeSeriesTopic;
 
     public TopicConfig(
-            @Value("${spring.kafka.trace.header}") String traceIdHeaderName,
+            @Value("${spring.kafka.header.traceId}") String traceIdHeaderName,
             @Value("${kafka.bindings.publisher.eod.eodTickers}") String eodTickerTopic,
             @Value("${kafka.bindings.publisher.eod.eodTimeSeries}") String eodTimeSeriesTopic) {
         this.traceIdHeaderName = traceIdHeaderName;
